@@ -12,13 +12,30 @@ datasource db {
   provider = "postgresql"
 }
 
-model users{
-  email String @id
-  name String
-  city String
+enum Role {
+  USER
+  ADMIN
 }
 
-model course {
-  id String @id
-  name String
+enum UserStatus {
+  ACTIVE
+  BLOCKED
 }
+
+model User {
+  id          String      @id @default(uuid())
+  email       String      @unique
+  firstName   String   
+  lastName    String
+  password    String
+  role        Role        @default(USER)
+  number      String?     @unique
+  status      UserStatus  @default(ACTIVE)
+  lastLogin   DateTime?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  privilages  String[]    @default([])
+
+  @@map("users")
+}
+
