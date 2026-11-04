@@ -2,7 +2,6 @@ import prisma from "@/lib/prisma";
 import { compare } from "bcryptjs";
 import { NextRequest, NextResponse } from "next/server";
 import * as jose from "jose"
-import { use } from "react";
 
 export async function POST(request : NextRequest){
     const body = await request.json();
@@ -32,9 +31,14 @@ export async function POST(request : NextRequest){
         }
 
         if(user.status != "ACTIVE"){
-            return NextResponse.json({
+            return NextResponse.json(
+                {
                 message : "your account is not active"
-            })
+                },
+                {
+                    status : 403
+                }
+            )
         }
 
         await prisma.user.update(
@@ -52,6 +56,7 @@ export async function POST(request : NextRequest){
         const isPasswordValid = await compare(body.password , user.password)
         if(isPasswordValid){
             const token = await new jose.SignJWT({
+                id : user.id,
                 firtName : user.firstName,
                 lastName : user.lastName,
                 email : user.email,
@@ -85,7 +90,7 @@ export async function POST(request : NextRequest){
         }else{
             return NextResponse.json(
                 {
-                    message : "password invalid"
+                    message : "password is not valid"
                 },
                 {
                     status : 403

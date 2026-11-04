@@ -22,18 +22,13 @@ export async function GetUser(request : NextRequest) : Promise<RequestUserType |
     }
 }
 
-export async function isPrivileges (request : NextRequest , requiredPrivileges : string) : Promise<boolean | null> {
+export async function isPrivileges (request : RequestUserType | null, requiredPrivileges : string) : Promise<boolean | null> {
     
-    const user : RequestUserType | null = await GetUser(request)
-
-    if(user == null){
-        return null
-    }
-
-    if(user.privileges.includes(requiredPrivileges)){
+   
+   if(request?.privileges.includes(requiredPrivileges)) {
         return true
     }else{
         return false
-    }
+}
 
 }
