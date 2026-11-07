@@ -1,6 +1,5 @@
-// This is your Prisma schema file,
+// This is your Prisma schema file
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 // Get a free hosted Postgres database in seconds: `npx create-db`
 
 generator client {
@@ -30,6 +29,7 @@ model User {
   password    String
   role        Role        @default(USER)
   number      String?     @unique
+  profileImage String       @default("/fhdsgdfhljgkhdf")
   status      UserStatus  @default(ACTIVE)
   lastLogin   DateTime?
   createdAt   DateTime    @default(now())
