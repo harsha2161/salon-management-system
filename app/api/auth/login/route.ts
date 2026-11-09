@@ -61,7 +61,8 @@ export async function POST(request : NextRequest){
                 lastName : user.lastName,
                 email : user.email,
                 role : user.role,
-                privilages : user.privilages
+                privilages : user.privilages,
+                profileImage : user.profileImage
 
                 //admin tokens, loginloken, owner, audiance, refresh token
             }).setProtectedHeader({
