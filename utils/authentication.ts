@@ -5,7 +5,7 @@ import { RequestUserType } from "@/types/request";
 export async function GetUser(request : NextRequest) : Promise<RequestUserType | null> {
     
     const loginToken = request.cookies.get("login-token")?.value
-    const secret = new TextEncoder().encode(process.env.jWT_KEY)
+    const secret = new TextEncoder().encode(process.env.JWT_KEY)
     
     try{
         const tokenData = await jose.jwtVerify(
@@ -24,8 +24,7 @@ export async function GetUser(request : NextRequest) : Promise<RequestUserType |
 
 export async function isPrivileges (request : RequestUserType | null, requiredPrivileges : string) : Promise<boolean | null> {
     
-   
-   if(request?.privileges.includes(requiredPrivileges)) {
+   if(request?.privilages.includes(requiredPrivileges)) {
         return true
     }else{
         return false
