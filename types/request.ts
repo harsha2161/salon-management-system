@@ -4,5 +4,6 @@ export interface RequestUserType {
     firstName : string,
     lastName : string,
     role : string,
-    privileges : string[]
+    privilages : string[],
+    profileImage : String,
 }
