@@ -137,7 +137,7 @@ export async function POST(request : NextRequest){
                 )
             }
     
-        }
+}
 
 // user update
 export async function PUT(request : NextRequest){
@@ -257,7 +257,7 @@ export async function PUT(request : NextRequest){
                 }
             )         
         }
-    }
+}
 
    
 
