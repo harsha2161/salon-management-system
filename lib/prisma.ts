@@ -6,6 +6,7 @@ const globalForPrisma = global as unknown as {
 const adapter = new PrismaPg({
   connectionString: process.env.DATABASE_URL, 
 }); 
+// singleton pattern for prisma client to avoid creating multiple instances of prisma client in development mode
 const prisma =
   globalForPrisma.prisma ||
   new PrismaClient({
