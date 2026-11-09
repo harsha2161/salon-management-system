@@ -21,6 +21,17 @@ enum UserStatus {
   BLOCKED
 }
 
+enum  ProductStatus {
+  AVAILABLE
+  UNAVAILABLE
+  DELETED
+}
+
+enum MediaType {
+  IMAGE
+  VIDEO
+}
+
 model User {
   id          String      @id @default(uuid())
   email       String      @unique
@@ -29,7 +40,7 @@ model User {
   password    String
   role        Role        @default(USER)
   number      String?     @unique
-  profileImage String       @default("/fhdsgdfhljgkhdf")
+  profileImage String     @default("/fhdsgdfhljgkhdf")
   status      UserStatus  @default(ACTIVE)
   lastLogin   DateTime?
   createdAt   DateTime    @default(now())
@@ -39,3 +50,28 @@ model User {
   @@map("users")
 }
 
+model Product {
+  id        String               @id @default(uuid())
+  sku       String
+  name      String
+  altName   String[]             @default([])
+  discription String?
+  stock       Int                @default(0)
+  status      ProductStatus     @default(UNAVAILABLE)
+  price       Float  
+  compareAt   Float?             
+  model       String?           
+  brand       String?
+
+  media       Media[]
+
+}
+
+model Media {
+  id      String        @id @default(uuid())
+  type    MediaType     
+  url     String
+
+  productId   String
+  product     Product   @relation(fields: [productId] , references: [id]) 
+}
