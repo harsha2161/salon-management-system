@@ -3,6 +3,7 @@ import { userAdminUpdateSchema } from "@/types/dto/userAdminUpdateRequest";
 import { userRegistrationRequestSchema } from "@/types/dto/userRegistrationRequests";
 import { userSelfUpdateSchema } from "@/types/dto/userSelfUpdateRequest";
 import { GetUser, isPrivileges } from "@/utils/authentication";
+import PageInfoRetrieval from "@/utils/pageInfoRetrieval";
 import bcrypt from "bcryptjs";
 import { NextRequest, NextResponse } from "next/server";
 import z from "zod";
@@ -10,14 +11,15 @@ import z from "zod";
 //get users
 export async function GET(request : NextRequest){
 
-    const requestUser = await GetUser(request)
+    const user = await GetUser(request)
+    const params = PageInfoRetrieval(request)
 
-    if(requestUser == null){
+    if(user == null){
         return NextResponse.json({
             message : "you are not login or your login session is expired"
         })
     }
-    const havePrivileges = await isPrivileges(requestUser , "users:read")
+    const havePrivileges = await isPrivileges(user , "users:read")
 
     if(!havePrivileges){
         return NextResponse.json({
@@ -29,21 +31,18 @@ export async function GET(request : NextRequest){
     )
     }
 
-    const pageNumber = parseInt(request.nextUrl.searchParams.get("pageNumber") || "1")
-    const pageSize = parseInt(request.nextUrl.searchParams.get("pageSize") || "10")
     const userCount = await prisma.user.count()
+    const totlePages = Math.ceil(userCount / params.pageSize)
 
-    const totlePages = Math.ceil(userCount / pageSize)
-
-    if(pageNumber > totlePages) {
+    if(params.pageNumber > totlePages) {
         return NextResponse.json({
             message : "page number is out of range"
         })
     }
 
     const users = await prisma.user.findMany({
-        skip : (pageNumber - 1 ) * pageSize,
-        take : pageSize,
+        skip : (params.pageNumber - 1 ) * params.pageSize,
+        take : params.pageSize,
         select : {
             id : true,
             firstName : true,
@@ -63,8 +62,8 @@ export async function GET(request : NextRequest){
             message : "user fatch successfull",
             users : users,
             pagination : {
-                pageNumber : pageNumber,
-                pageSize : pageSize,
+                pageNumber : params.pageNumber,
+                pageSize : params.pageSize,
                 totlePages : totlePages,
                 totle : userCount,
             }
