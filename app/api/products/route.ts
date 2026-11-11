@@ -89,18 +89,34 @@ export async function GET(request : NextRequest){
     const user = await GetUser(request)
     const params = PageInfoRetrieval(request)
 
-    const totalProducts = await prisma.product.count()
-    const totalPages = Math.ceil(totalProducts / params.pageSize)
+    const hasPrivilage = await isPrivileges(user , "products:view")
 
-    const products = await prisma.product.findMany({
-        skip : (params.pageNumber - 1 ) * params.pageSize,
-        take : params.pageSize,
-        include : {
-            media : true
-        }
-    })
+    // fetch all products without delete status
+    if(!hasPrivilage){
+        const totalProduct = await prisma.product.count(
+            {
+                where : {
+                    NOT : {
+                         status : ProductStatus.DELETED,
+                    },
+                   
+                }
+            }
+        )
 
-    return NextResponse.json(
+        const totalPages = Math.ceil( totalProduct / params.pageSize)
+
+        const products = await prisma.product.findMany({
+            skip : (params.pageNumber - 1 ) * params.pageSize,
+            take : params.pageSize,
+            include : {
+                media : true
+            }
+        })
+
+        
+     
+      return NextResponse.json(
         {
             message : "products fetch is successfull",
             product : products,
@@ -108,10 +124,24 @@ export async function GET(request : NextRequest){
                 pageNumber : params.pageNumber,
                 pageSize : params.pageSize,
                 totalPage : totalPages,
-                totalCount : totalProducts
+                totalCount : totalProduct
             }
         }
     )
+    // 
+    } else {
+        const totalProduct = await prisma.product.count(
+            {
+                where : {
+                    status : ProductStatus.AVAILABLE
+                }
+            }
+        )
+    }
+
+  
+
+  
 
 
 
