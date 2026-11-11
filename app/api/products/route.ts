@@ -91,8 +91,8 @@ export async function GET(request : NextRequest){
 
     const hasPrivilage = await isPrivileges(user , "products:view")
 
-    // fetch all products without delete status
-    if(!hasPrivilage){
+    // fetch all products without delete status(for having privilage users)
+    if(hasPrivilage){
         const totalProduct = await prisma.product.count(
             {
                 where : {
@@ -114,8 +114,6 @@ export async function GET(request : NextRequest){
             }
         })
 
-        
-     
       return NextResponse.json(
         {
             message : "products fetch is successfull",
@@ -128,7 +126,7 @@ export async function GET(request : NextRequest){
             }
         }
     )
-    // 
+    // fetch available products for all users
     } else {
         const totalProduct = await prisma.product.count(
             {
@@ -137,15 +135,29 @@ export async function GET(request : NextRequest){
                 }
             }
         )
+        
+        const totalPages = Math.ceil( totalProduct / params.pageSize)
+
+        const products = await prisma.product.findMany(
+            {
+                where : {
+                    status : ProductStatus.AVAILABLE
+                }
+            }
+        )
+           return NextResponse.json({
+
+            message : "products fetch is successfull",
+            product : products,
+            pagination : {
+                pageNumber : params.pageNumber,
+                pageSize : params.pageSize,
+                totalPage : totalPages,
+                totalCount : totalProduct
+            }
+        }
+    )
     }
-
-  
-
-  
-
-
-
-    
 }
 
 export async function DELETE(request : NextRequest){
