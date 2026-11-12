@@ -1,5 +1,4 @@
 import z from "zod";
-import { userAdminUpdateSchema } from "./userAdminUpdateRequest";
 
 const ProductStatusEnum = z.enum([ "AVAILABLE" ,  "UNAVAILABLE" , "DELETED"])
 const MediaTypesEnum = z.enum([ "IMAGE" , "VIDEO"])
