@@ -25,7 +25,7 @@ export async function POST(request : NextRequest){
                 message : "user is not found"
                 },
                 {
-                    status : 400
+                    status : 422
                 }
             )
         }
